@@ -921,5 +921,105 @@ function App(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
+<!-- Mały LLM w przeglądarce — WebLLM Qwen2.5-0.5B (free, cached w IndexedDB) -->
+<script type="module">
+  import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+  const MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
+  let engine = null;
+  let loading = false;
+
+  const chatBtn = document.createElement("button");
+  chatBtn.id = "neru-chat-toggle";
+  chatBtn.innerHTML = "?";
+  chatBtn.style.cssText = "position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:rgba(0,240,255,0.15);border:1px solid rgba(0,240,255,0.4);color:#00f0ff;font-size:24px;cursor:pointer;z-index:9999;backdrop-filter:blur(20px);transition:all 0.3s;box-shadow:0 0 24px rgba(0,240,255,0.3)";
+  chatBtn.title = "Zapytaj NERU";
+  document.body.appendChild(chatBtn);
+
+  const chatPanel = document.createElement("div");
+  chatPanel.id = "neru-chat-panel";
+  chatPanel.style.cssText = "position:fixed;bottom:90px;right:24px;width:380px;max-width:90vw;height:480px;background:rgba(10,12,16,0.95);border:1px solid rgba(0,240,255,0.3);border-radius:16px;backdrop-filter:blur(24px);box-shadow:0 24px 80px rgba(0,0,0,0.5);display:none;flex-direction:column;z-index:9999;overflow:hidden;font-family:system-ui,sans-serif";
+  chatPanel.innerHTML = `
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center">
+      <div style="color:#00f0ff;font-size:13px;font-weight:600;letter-spacing:0.1em">NERU</div>
+      <div id="neru-chat-status" style="color:#6b7280;font-size:11px">offline</div>
+    </div>
+    <div id="neru-chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;color:#e8ecf2;font-size:14px;line-height:1.5"></div>
+    <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:8px">
+      <input id="neru-chat-input" type="text" placeholder="Napisz pytanie..." style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;color:#e8ecf2;font-size:14px;outline:none">
+      <button id="neru-chat-send" style="background:#00f0ff;color:#0a0c10;border:none;border-radius:8px;padding:0 16px;cursor:pointer;font-weight:600">→</button>
+    </div>
+  `;
+  document.body.appendChild(chatPanel);
+
+  const status = chatPanel.querySelector("#neru-chat-status");
+  const msgs = chatPanel.querySelector("#neru-chat-messages");
+  const input = chatPanel.querySelector("#neru-chat-input");
+  const sendBtn = chatPanel.querySelector("#neru-chat-send");
+
+  function addMsg(role, text) {
+    const d = document.createElement("div");
+    d.style.cssText = role === "user" ? "align-self:flex-end;background:rgba(0,240,255,0.1);border-radius:12px;padding:8px 12px;max-width:80%" : "align-self:flex-start;background:rgba(168,85,247,0.08);border-radius:12px;padding:8px 12px;max-width:80%";
+    d.textContent = text;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  chatBtn.onclick = () => {
+    chatPanel.style.display = chatPanel.style.display === "flex" ? "none" : "flex";
+    if (!engine && !loading) loadModel();
+  };
+
+  async function loadModel() {
+    loading = true;
+    status.textContent = "ładowanie modelu (~500MB, jednorazowo)...";
+    status.style.color = "#fbbf24";
+    try {
+      engine = await CreateMLCEngine(MODEL_ID, {
+        initProgressCallback: (p) => {
+          status.textContent = `ładowanie: ${Math.round((p.progress||0)*100)}%`;
+        }
+      });
+      status.textContent = "gotowy";
+      status.style.color = "#2DD4A8";
+      addMsg("neru", "Cześć! Jestem NERU. Zapytaj o projekt, pobieranie, lub cokolwiek.");
+    } catch(e) {
+      status.textContent = "model offline";
+      status.style.color = "#f87171";
+      addMsg("neru", "Model nie może się załadować. Sprawdź czy przeglądarka wspiera WebGPU. Tu znajdziesz pomoc: github.com/aztun-neru/neru");
+    }
+    loading = false;
+  }
+
+  async function ask() {
+    const q = input.value.trim();
+    if (!q || !engine) return;
+    input.value = "";
+    addMsg("user", q);
+    status.textContent = "myślę...";
+    status.style.color = "#fbbf24";
+    try {
+      const r = await engine.chat.completions.create({
+        messages: [
+          {role: "system", content: "Jesteś NERU — pomocnik na stronie aztun.com. Odpowiadaj zwięźle po polsku. Pomagaj z pytania o NERU (lokalny asystent AI), pobieranie, konfigurację. Jeśli nie wiesz - powiedz że nie wiesz, nie zmyślaj."},
+          {role: "user", content: q}
+        ],
+        temperature: 0.7,
+        max_tokens: 200
+      });
+      addMsg("neru", r.choices[0]?.message?.content || "Brak odpowiedzi");
+      status.textContent = "gotowy";
+      status.style.color = "#2DD4A8";
+    } catch(e) {
+      addMsg("neru", "Błąd: " + e.message);
+      status.textContent = "błąd";
+      status.style.color = "#f87171";
+    }
+  }
+
+  sendBtn.onclick = ask;
+  input.onkeydown = (e) => { if (e.key === "Enter") ask(); };
+</script>
+
 </body>
 </html>
