@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self';">
+<meta name="description" content="AZTUN — hub projektów technologicznych, które działają lokalnie. NERU: osobisty asystent AI w przeglądarce, offline, bez chmury.">
+<meta name="theme-color" content="#07111b">
+<title>AZTUN — lokalna inteligencja · NERU</title>
+<style>
+:root{
+  --bg:#07111b; --bg2:#0a1622; --panel:#0d1a27;
+  --line:rgba(148,196,214,.14); --line2:rgba(148,196,214,.26);
+  --text:#e7f1f2; --mut:#8ba7ad; --mut2:#5f7d87;
+  --amber:#ffc24b; --mint:#4fe3a5; --cyan:#5fd4f5; --coral:#ff7a66;
+  --mono:ui-monospace,"Cascadia Code","SF Mono","JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --rad:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:var(--amber);color:#17110a}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+section[id]{scroll-margin-top:90px}
+
+/* ---------- ambient background ---------- */
+.bg{position:fixed;inset:0;z-index:-3;background:
+  radial-gradient(1100px 700px at 84% -12%, rgba(95,212,245,.075), transparent 62%),
+  radial-gradient(900px 640px at -12% 34%, rgba(255,194,75,.05), transparent 60%),
+  radial-gradient(700px 500px at 60% 110%, rgba(79,227,165,.045), transparent 60%),
+  var(--bg)}
+.bg-grid{position:fixed;inset:-2px;z-index:-2;pointer-events:none;
+  background-image:linear-gradient(rgba(140,200,220,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(140,200,220,.05) 1px,transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 95% 85% at 50% 0%,#000 25%,transparent 78%);
+  mask-image:radial-gradient(ellipse 95% 85% at 50% 0%,#000 25%,transparent 78%);
+  animation:gridMove 26s linear infinite}
+@keyframes gridMove{to{background-position:0 46px,0 46px}}
+.sweep{position:fixed;left:0;right:0;top:0;height:34vh;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(95,212,245,.035) 45%,rgba(79,227,165,.028) 55%,transparent);
+  animation:sweep 12s ease-in-out infinite}
+@keyframes sweep{0%{transform:translateY(-40vh)}62%{transform:translateY(110vh)}100%{transform:translateY(110vh)}}
+
+/* ---------- shared ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,.8,.3,1)}
+.rv.in{opacity:1;transform:none}
+.kick{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--amber);margin-bottom:18px}
+.kick::before{content:'';width:34px;height:1px;background:var(--amber);flex:none}
+.sec-t{font-family:var(--mono);font-weight:800;font-size:clamp(1.7rem,4vw,2.6rem);letter-spacing:-.01em;margin-bottom:12px;line-height:1.15}
+.sec-sub{color:var(--mut);max-width:58ch;margin-bottom:46px;line-height:1.7}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:transform .25s,box-shadow .25s,border-color .25s,color .25s}
+.btn-p{background:var(--amber);color:#17110a;font-weight:700}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,194,75,.3)}
+.btn-g{border-color:var(--line2);color:var(--text);background:none}
+.btn-g:hover{border-color:var(--amber);color:var(--amber);transform:translateY(-2px)}
+.ic{flex:none;display:block}
+
+/* ---------- header ---------- */
+.hd{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 0;transition:padding .3s,background .3s,border-color .3s;border-bottom:1px solid transparent}
+.hd.sc{background:rgba(7,17,27,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom-color:var(--line);padding:10px 0}
+.hd-in{display:flex;align-items:center;gap:26px}
+.logo{font-family:var(--mono);font-weight:700;letter-spacing:.16em;font-size:1.02rem}
+.logo-c{color:var(--amber);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.nav{margin-left:auto;display:flex;gap:24px}
+.nav a{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);position:relative;padding:4px 0;transition:color .25s}
+.nav a::after{content:'';position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav a:hover{color:var(--text)}
+.nav a:hover::after{transform:scaleX(1)}
+.net{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut2);display:flex;align-items:center;gap:7px}
+.net i{width:7px;height:7px;border-radius:50%;display:inline-block;animation:pulse 2.2s infinite}
+.net.on i{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+.net.off i{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.lang{display:flex;border:1px solid var(--line2);border-radius:999px;overflow:hidden;flex:none}
+.lang button{padding:7px 13px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;background:none;border:none;color:var(--mut);cursor:pointer;transition:background .25s,color .25s}
+.lang button.on{background:var(--amber);color:#17110a;font-weight:700}
+
+/* ---------- hero ---------- */
+.hero{min-height:100svh;display:flex;align-items:center;padding:140px 0 90px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:56px;align-items:center;width:100%}
+.h-tag{font-family:var(--mono);text-transform:uppercase;letter-spacing:.24em;font-size:clamp(.68rem,1.3vw,.84rem);color:var(--mint);margin-bottom:16px}
+.h-title{position:relative;font-family:var(--mono);font-weight:800;font-size:clamp(4rem,12.5vw,8rem);line-height:.95;letter-spacing:-.03em;margin:0 0 22px;z-index:1}
+.h-title .ghost{position:absolute;left:.075em;top:.075em;z-index:-1;color:transparent;-webkit-text-stroke:1.5px rgba(255,194,75,.3);user-select:none}
+.blockcaret{display:inline-block;width:.42em;height:.72em;background:var(--amber);margin-left:.1em;animation:blink 1.1s steps(2) infinite}
+.h-lead{color:var(--mut);font-size:1.08rem;line-height:1.75;max-width:52ch;margin-bottom:34px}
+.h-cta{display:flex;gap:14px;flex-wrap:wrap}
+.term{font-family:var(--mono);font-size:.76rem;color:var(--mut);border-left:2px solid var(--line2);padding-left:14px;margin-bottom:28px;min-height:66px}
+.tl{white-space:pre-wrap;line-height:2;opacity:0;transition:opacity .3s}
+.tl.vis{opacity:1}
+.tl-p{color:var(--amber);margin-right:9px}
+.caret{display:inline-block;width:7px;height:12px;background:var(--mint);margin-left:4px;vertical-align:-2px;animation:blink 1s steps(2) infinite}
+.scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mut2);display:flex;flex-direction:column;align-items:center;gap:6px}
+.scrollhint span{animation:dip 1.8s ease-in-out infinite}
+@keyframes dip{50%{transform:translateY(5px)}}
+
+/* ---------- core visual ---------- */
+.core{position:relative;aspect-ratio:1;max-width:470px;width:100%;margin-left:auto;border:1px solid var(--line);border-radius:22px;background:linear-gradient(160deg,rgba(16,31,46,.92),rgba(9,18,28,.94));box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}
+.core-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(140,200,220,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(140,200,220,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(circle at 50% 46%,#000 20%,transparent 72%);mask-image:radial-gradient(circle at 50% 46%,#000 20%,transparent 72%)}
+.core-sweep{position:absolute;inset:0;background:conic-gradient(from 0deg at 50% 46%,transparent 0deg,transparent 296deg,rgba(95,212,245,.17) 348deg,transparent 360deg);animation:rot 7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.ring{position:absolute;border:1px solid rgba(95,212,245,.22);border-radius:50%;left:50%;top:46%;transform:translate(-50%,-50%)}
+.r1{width:32%;height:32%}.r2{width:56%;height:56%;border-color:rgba(95,212,245,.14)}.r3{width:80%;height:80%;border-color:rgba(95,212,245,.08)}
+.ring.ping{width:32%;height:32%;border-color:rgba(255,194,75,.4);animation:ringPing 3.6s ease-out infinite}
+@keyframes ringPing{0%{transform:translate(-50%,-50%) scale(.6);opacity:.9}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+.core-dot{position:absolute;left:50%;top:46%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:50%;background:var(--amber);box-shadow:0 0 22px var(--amber),0 0 60px rgba(255,194,75,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.node{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint);animation:nodeB 3.2s infinite}
+@keyframes nodeB{0%,100%{opacity:1}50%{opacity:.15}}
+.n1{top:20%;left:24%}.n2{top:38%;right:16%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation-delay:-1.2s}.n3{bottom:30%;left:18%;background:var(--amber);box-shadow:0 0 12px var(--amber);animation-delay:-2.1s}.n4{bottom:22%;right:26%;animation-delay:-.6s}
+.core-title{position:absolute;top:16px;left:18px;font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;color:var(--amber);display:flex;align-items:center;gap:8px}
+.core-title i{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
+.core-readout{position:absolute;left:18px;right:18px;bottom:14px;display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;color:var(--mut);text-transform:uppercase;border-top:1px solid var(--line);padding-top:11px}
+.core-readout b{color:var(--mint);font-weight:400}
+.tk{position:absolute;width:13px;height:13px;border:2px solid var(--line2)}
+.tk1{top:9px;left:9px;border-right:none;border-bottom:none}
+.tk2{top:9px;right:9px;border-left:none;border-bottom:none}
+.tk3{bottom:9px;left:9px;border-right:none;border-top:none}
+.tk4{bottom:9px;right:9px;border-left:none;border-top:none}
+.chipf{position:absolute;font-family:var(--mono);font-size:.64rem;padding:5px 11px;border-radius:999px;animation:floaty 6s ease-in-out infinite}
+@keyframes floaty{50%{transform:translateY(-9px)}}
+.cf1{top:17%;right:7%;color:var(--cyan);background:rgba(95,212,245,.08);border:1px solid rgba(95,212,245,.3)}
+.cf2{bottom:33%;left:6%;color:var(--mint);background:rgba(79,227,165,.08);border:1px solid rgba(79,227,165,.3);animation-delay:-2s}
+.cf3{top:52%;right:9%;color:var(--amber);background:rgba(255,194,75,.08);border:1px solid rgba(255,194,75,.3);animation-delay:-4s}
+
+/* ---------- manifest ---------- */
+.m-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.m-card{position:relative;padding:36px 28px 30px;background:linear-gradient(180deg,rgba(17,32,46,.92),rgba(10,20,30,.92));border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s,box-shadow .35s}
+.m-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),transparent 72%)}
+.m-card:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--acc) 55%,transparent);box-shadow:0 18px 44px rgba(0,0,0,.42)}
+.m-num{position:absolute;top:16px;right:20px;font-family:var(--mono);font-weight:800;font-size:2.6rem;color:var(--acc);opacity:.15;line-height:1}
+.m-ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--acc);margin-bottom:22px;transition:transform .35s,box-shadow .35s}
+.m-card:hover .m-ico{transform:rotate(-6deg) scale(1.07);box-shadow:0 0 26px color-mix(in srgb,var(--acc) 32%,transparent)}
+.m-card h3{font-family:var(--mono);font-size:1rem;letter-spacing:.06em;margin-bottom:10px;text-transform:uppercase}
+.m-card p{color:var(--mut);font-size:.94rem;line-height:1.7}
+
+/* ---------- projects ---------- */
+.p-grid{display:grid;grid-template-columns:1.35fr 1fr;grid-template-rows:auto auto;gap:22px}
+.p-neru{grid-row:1/3;position:relative;padding:42px 40px;border-radius:18px;border:1px solid rgba(255,194,75,.42);display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(620px 320px at 100% 0%,rgba(255,194,75,.13),transparent 60%),linear-gradient(180deg,rgba(20,32,40,.95),rgba(12,20,28,.96));transition:transform .35s,box-shadow .35s}
+.p-neru:hover{transform:translateY(-5px);box-shadow:0 26px 64px rgba(0,0,0,.5)}
+.p-badge{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(255,194,75,.42);border-radius:999px;padding:6px 13px;width:max-content;margin-bottom:24px}
+.p-badge i{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
+.p-name{font-family:var(--mono);font-weight:800;font-size:clamp(2.6rem,6vw,3.9rem);letter-spacing:.02em;line-height:1;margin-bottom:10px;text-shadow:0 0 40px rgba(255,194,75,.25)}
+.p-role{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:20px}
+.p-desc{color:var(--mut);line-height:1.75;max-width:46ch;margin-bottom:28px}
+.p-links{display:flex;gap:12px;margin-top:auto;flex-wrap:wrap}
+.eq{display:flex;gap:4px;align-items:flex-end;height:26px;position:absolute;right:36px;bottom:36px}
+.eq span{width:3px;border-radius:2px;background:var(--amber);animation:eq 1.15s ease-in-out infinite}
+@keyframes eq{0%,100%{height:6px}50%{height:24px}}
+.p-soon{border:1px dashed var(--line2);border-radius:16px;padding:30px;display:flex;align-items:center;gap:18px;background:rgba(13,26,39,.4);transition:border-color .3s,background .3s;min-height:172px}
+.p-soon:hover{border-color:rgba(255,194,75,.55);background:rgba(13,26,39,.72)}
+.p-soon .s-plus{color:var(--mut2);flex:none;opacity:.7}
+.p-soon .s-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mut2)}
+.p-soon .s-title{font-family:var(--mono);font-weight:700;font-size:1.5rem;color:var(--mut);opacity:.8;margin-top:7px}
+
+/* ---------- features ---------- */
+.f-group{margin-bottom:58px}
+.f-group:last-child{margin-bottom:0}
+.f-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.f-bar{width:4px;height:28px;border-radius:2px;background:var(--acc);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 50%,transparent);flex:none}
+.f-code{font-family:var(--mono);color:var(--acc);font-size:.78rem;letter-spacing:.22em}
+.f-head h3{font-family:var(--mono);font-size:clamp(1.1rem,2.4vw,1.45rem);font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.f-sub{color:var(--mut);font-size:.94rem;margin:0 0 26px 18px}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.f-card{background:linear-gradient(180deg,rgba(15,28,41,.9),rgba(10,19,29,.9));border:1px solid var(--line);border-radius:12px;padding:22px 20px;transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s,box-shadow .3s}
+.f-card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--acc) 50%,transparent);box-shadow:0 14px 36px rgba(0,0,0,.38)}
+.f-ico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;margin-bottom:15px;background:color-mix(in srgb,var(--acc) 13%,transparent);color:var(--acc)}
+.f-name{font-family:var(--mono);font-weight:700;font-size:.9rem;margin-bottom:7px}
+.f-desc{color:var(--mut);font-size:.85rem;line-height:1.65}
+
+/* ---------- use cases ---------- */
+.u-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.u-card{display:flex;flex-direction:column;gap:12px}
+.u-b{padding:15px 18px;font-size:.92rem;line-height:1.65;width:90%;transition:border-color .3s,transform .3s}
+.u-who{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;margin-bottom:7px}
+.u-q{background:rgba(20,36,50,.8);border:1px solid var(--line);border-radius:4px 14px 14px 14px;align-self:flex-end}
+.u-q .u-who{color:var(--mut2)}
+.u-a{background:rgba(255,194,75,.06);border:1px solid rgba(255,194,75,.22);border-radius:14px 4px 14px 14px;align-self:flex-start}
+.u-a .u-who{color:var(--amber)}
+.u-a:hover{border-color:rgba(255,194,75,.5);transform:translateY(-2px)}
+
+/* ---------- about ---------- */
+.a-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:46px;align-items:start}
+.a-who{color:var(--mut);line-height:1.75;font-size:1.02rem}
+.a-why{border-left:3px solid var(--amber);padding:8px 0 8px 20px;margin:26px 0;font-size:1.08rem;line-height:1.7;color:var(--text)}
+.a-panel{border:1px solid var(--line);border-radius:16px;padding:28px;background:linear-gradient(180deg,rgba(15,28,41,.9),rgba(10,19,29,.9))}
+.a-panel h3{font-family:var(--mono);text-transform:uppercase;font-size:.82rem;letter-spacing:.16em;margin-bottom:14px;color:var(--text)}
+.a-panel .a-join{color:var(--mut);font-size:.92rem;line-height:1.7;margin-bottom:18px}
+.a-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:.88rem}
+.a-row .k{color:var(--mut2);font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase}
+.a-mail{font-family:var(--mono);color:var(--amber);font-size:.86rem}
+.chip{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;padding:5px 10px;border-radius:999px;border:1px solid rgba(79,227,165,.35);color:var(--mint)}
+.btn-xs{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;padding:7px 12px;border:1px solid var(--line2);border-radius:8px;background:none;color:var(--mut);cursor:pointer;transition:color .25s,border-color .25s}
+.btn-xs:hover{color:var(--amber);border-color:var(--amber)}
+.btn-xs.ok{color:var(--mint);border-color:var(--mint)}
+
+/* ---------- footer ---------- */
+.ft{border-top:1px solid var(--line);padding:74px 0 46px;position:relative;overflow:hidden;margin-top:40px}
+.ft-ghost{position:absolute;left:50%;transform:translateX(-50%);bottom:-.3em;font-family:var(--mono);font-weight:800;font-size:clamp(6rem,19vw,15rem);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(148,196,214,.08);pointer-events:none;user-select:none;white-space:nowrap}
+.ft-in{position:relative;display:flex;flex-direction:column;gap:24px}
+.ft-top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.ft-links{display:flex;gap:24px;flex-wrap:wrap}
+.ft-links a{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);transition:color .25s}
+.ft-links a:hover{color:var(--amber)}
+.ft-priv{display:flex;gap:11px;align-items:center;color:var(--mut);font-size:.84rem}
+.ft-priv .ic{color:var(--mint)}
+.ft-bot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--mut2)}
+
+/* ---------- model chat ---------- */
+.fab{position:fixed;right:22px;bottom:22px;z-index:70;width:58px;height:58px;border-radius:50%;border:none;background:var(--amber);color:#17110a;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 32px rgba(255,194,75,.35);transition:transform .3s}
+.fab:hover{transform:translateY(-3px) scale(1.05)}
+.fab::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(255,194,75,.5);animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.88);opacity:.9}80%,100%{transform:scale(1.55);opacity:0}}
+.fab.active::after{display:none}
+.chat{position:fixed;right:22px;bottom:94px;z-index:70;width:min(386px,calc(100vw - 30px));height:min(566px,calc(100svh - 128px));display:flex;flex-direction:column;background:rgba(10,20,31,.97);border:1px solid var(--line2);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.55);overflow:hidden;transform-origin:bottom right;transition:opacity .32s cubic-bezier(.2,.8,.2,1),transform .32s cubic-bezier(.2,.8,.2,1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.chat.closed{opacity:0;transform:translateY(18px) scale(.95);pointer-events:none}
+.chat-hd{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:rgba(13,25,37,.65)}
+.chat-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber);animation:pulse 2s infinite;flex:none}
+.chat-name{font-family:var(--mono);font-weight:700;font-size:.92rem;letter-spacing:.08em}
+.chat-status{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);border:1px solid rgba(79,227,165,.32);padding:4px 9px;border-radius:999px;margin-left:auto}
+.chat-x{background:none;border:none;color:var(--mut);cursor:pointer;padding:6px;display:grid;place-items:center;border-radius:8px;transition:color .2s,background .2s}
+.chat-x:hover{color:var(--text);background:rgba(148,196,214,.1)}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.msg{max-width:85%;padding:10px 13px;font-size:.87rem;line-height:1.6;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(7px)}}
+.msg.user{align-self:flex-end;background:rgba(95,212,245,.12);border:1px solid rgba(95,212,245,.26);border-radius:12px 3px 12px 12px}
+.msg.bot{align-self:flex-start;background:rgba(255,194,75,.08);border:1px solid rgba(255,194,75,.2);border-radius:3px 12px 12px 12px}
+.typing{align-self:flex-start;display:flex;gap:5px;padding:13px 15px;background:rgba(255,194,75,.08);border:1px solid rgba(255,194,75,.2);border-radius:3px 12px 12px 12px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:tp 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.chat-faq{display:flex;gap:8px;padding:10px 14px 4px;overflow-x:auto;scrollbar-width:none;flex:none}
+.chat-faq::-webkit-scrollbar{display:none}
+.chat-faq button{white-space:nowrap;font-family:var(--mono);font-size:.66rem;padding:7px 12px;border-radius:999px;border:1px solid var(--line2);background:none;color:var(--mut);cursor:pointer;transition:color .2s,border-color .2s;flex:none}
+.chat-faq button:hover{color:var(--amber);border-color:var(--amber)}
+.chat-in{display:flex;gap:8px;padding:12px 14px 8px;flex:none}
+.chat-in input{flex:1;min-width:0;background:rgba(15,29,42,.9);border:1px solid var(--line2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--sans);font-size:.87rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.chat-in input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,194,75,.13)}
+.chat-send{width:44px;border-radius:10px;border:none;background:var(--amber);color:#17110a;display:grid;place-items:center;cursor:pointer;transition:transform .2s,opacity .2s;flex:none}
+.chat-send:hover{transform:translateY(-1px)}
+.chat-send:disabled{opacity:.45;cursor:not-allowed}
+.chat-note{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mut2);text-align:center;padding:8px 12px 13px;flex:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .core{margin:0 auto;max-width:400px}
+  .m-grid{grid-template-columns:1fr}
+  .p-grid{grid-template-columns:1fr}
+  .p-neru{grid-row:auto}
+  .f-grid{grid-template-columns:repeat(2,1fr)}
+  .a-grid{grid-template-columns:1fr;gap:36px}
+}
+@media (max-width:860px){.nav{display:none}.net{display:none}}
+@media (max-width:640px){
+  .f-grid,.u-grid{grid-template-columns:1fr}
+  section{padding:84px 0!important}
+  .hero{padding-top:120px}
+  .u-q,.u-a{width:100%}
+  .chat{right:15px;bottom:88px}
+  .fab{right:15px;bottom:15px}
+  .eq{display:none}
+}
+section{padding:108px 0;position:relative}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="sweep" aria-hidden="true"></div>
+<noscript><div style="min-height:100vh;display:grid;place-items:center;font-family:monospace;color:#e7f1f2;letter-spacing:.2em">AZTUN — włącz JavaScript</div></noscript>
+<div id="root"><div style="min-height:100vh;display:grid;place-items:center;font-family:ui-monospace,monospace;letter-spacing:.24em;font-size:1.1rem">AZTUN<span style="color:#ffc24b">▮</span></div></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const {useState, useEffect, useRef} = React;
+
+/* ============ i18n ============ */
+const LANG = {
+pl:{
+  nav:{manifest:'Manifest',projects:'Projekty',neru:'NERU',use:'Zastosowania',about:'O nas'},
+  hero:{
+    boot:['aztun --init --local','rdzeń NERU: załadowany · offline','trackery: 0 · ciasteczka: 0 · dane: u Ciebie'],
+    tag:'Lokalna inteligencja. Zero chmury.',
+    lead:'AZTUN to hub projektów technologicznych, które żyją na Twoim sprzęcie — prywatnie, offline i pod Twoją pełną kontrolą. Projekt flagowy: NERU, osobisty asystent AI działający w przeglądarce.',
+    cta1:'Zobacz NERU',cta2:'GitHub',scroll:'przewiń',
+    core:{title:'NERU CORE',l1:'offline',l2:'latencja 0ms',l3:'pamięć: lokalna'}
+  },
+  manifest:{kick:'01 · manifest',title:'Zasady, nie slogany.',sub:'Trzy reguły, których nigdy nie łamiemy — niezależnie od projektu.',
+    items:[
+      ['shield','Prywatność','Twoje rozmowy, pliki i pamięć nie opuszczają urządzenia. Zero telemetrii, zero analityki — nic, co mogłoby wyciec.'],
+      ['sliders','Kontrola','Ty zatwierdzasz każdy ruch. NERU proponuje plan, Ty decydujesz — z pełnym wglądem w każdą akcję.'],
+      ['key','Niezależność','Bez chmury i bez abonamentu. Otwarty kod, lokalne modele — nikt nie wyłączy Ci asystenta.']
+    ]},
+  projects:{kick:'02 · projekty',title:'Co budujemy.',sub:'Jeden hub, wiele narzędzi. Wszystkie działają lokalnie.',
+    badge:'v7 beta',role:'asystent AI · w przeglądarce · offline',
+    neruDesc:'Osobisty asystent AI w przeglądarce: planuje, pamięta, mówi i słucha — wszystko offline, na Twoich zasadach. Zero chmury, zero konta, zero abonamentu.',
+    goNeru:'Przejdź do NERU',soon:'Wkrótce',slot2:'projekt 02 · w budowie',slot3:'projekt 03 · w budowie'},
+  features:{kick:'03 · neru — arsenał',title:'20 modułów. Pełna kontrola.',sub:'Komendy użytkownika, silnik myślowy i moduły ARMS — wszystko w jednym lokalnym agencie.',
+    groups:[
+      {code:'A',title:'Komendy użytkownika',sub:'Ty mówisz — NERU wykonuje, po Twojej aprobacie.',items:[
+        ['clipboard','/plan','NERU proponuje plan działania — Ty zatwierdzasz lub odrzucasz przed wykonaniem.'],
+        ['mic','/voice converse','Tryb głosowy Her-style — pełna rozmowa głosem (STT + TTS + VAD), bez klawiatury.'],
+        ['archive','/backup','Backup stanu agenta — szyfrowanie AES-256, harmonogram auto, selektywne kategorie.'],
+        ['rotate','/restore','Przywracanie memory, soul, chat, personas, config — wybierasz, co wraca.'],
+        ['search','/rag search','RAG nad dokumentacją — przeszukuje projekty i auto-wstrzykuje kontekst do prompta.'],
+        ['camera','/screenshot','Screenshot + analiza vision — capture ekranu, analiza i sugerowane odpowiedzi.'],
+        ['users','/agent /crew','Multi-agent — sub-agenci do zadań równoległych, komendy crew do orkiestracji.'],
+        ['monitor','/desktop /3d','Automatyzacja pulpitu — kalendarz, zarządzanie oknami, bridge do aplikacji 3D.']
+      ]},
+      {code:'B',title:'Silnik myślowy',sub:'To pracuje pod maską, gdy NERU myśli.',items:[
+        ['branch','WARP','Weighted Adaptive Reasoning Paths — równoległe ścieżki myślenia ważone kosztem.'],
+        ['moon','DreamEngine','Cykl snu: awake → drowsy → dreaming → deep → waking, plus krystalizacja pamięci.'],
+        ['zap','ProactivityEngine','Proaktywne sygnały — NERU sam proponuje akcje, gdy wykryje bezczynność.'],
+        ['checkcircle','Verification Loop','Auto-check po zmianach — tsc, npm test i smoke test uruchamiane automatycznie.'],
+        ['code','Prompt Engineering','4 moduły: NegativeExample, OutputContract, MicroCompactor, TokenBudget.'],
+        ['chat','Relational','ConversationEngine + EmotionTracker + RelationshipCoach — śledzi ton i dynamikę rozmowy.']
+      ]},
+      {code:'C',title:'Moduły ARMS',sub:'Specjalistyczne umiejętności na życzenie.',items:[
+        ['file','Letters','Pisma urzędowe — windykacja, sąd, urząd, komornik. Czyta i tłumaczy na prosty język.'],
+        ['music','Music','AI Playlist + Radio — uczy się preferencji i generuje playlisty dopasowane do kontekstu.'],
+        ['target','GameStation','36 Forteli, szachy, shogi, go — trening myślenia strategicznego.'],
+        ['lock','Security Suite','CodeAnalyzer + SecretScanner + MITREMapper — pełny skan bezpieczeństwa kodu.'],
+        ['globe','EnvironmentSimulator','Testy cross-platform — Windows, Unix, macOS, Android, iOS z jednego środowiska.'],
+        ['login','Cloud Auth','Logowanie Google / Apple / GitHub — privacy-first, dane nie opuszczają lokalnego kontekstu.']
+      ]}
+    ]},
+  use:{kick:'04 · zastosowania',title:'Brzmi znajomo?',sub:'Prawdziwe scenariusze. Tak odpowiada NERU.',you:'TY',
+    items:[
+      ['Mam pismo z urzędu i nie rozumiem, o co chodzi.','NERU czyta pismo, tłumaczy je na prosty język i mówi, co musisz zrobić do kiedy.'],
+      ['Pismo od komornika — nie wiem, co odpowiedzieć.','NERU klasyfikuje typ pisma, sprawdza terminy i proponuje treść odpowiedzi.'],
+      ['Chcę asystenta, który mnie pamięta.','NERU buduje trwałą pamięć o Tobie — lokalną, szyfrowaną i tylko Twoją.'],
+      ['Chcę zrobić backup asystenta przed zmianą.','/backup --encrypt tworzy szyfrowany obraz, a /restore przywraca, gdy coś pójdzie nie tak.'],
+      ['Nie chcę zależności od Google ani OpenAI.','Modele działają lokalnie w Twojej przeglądarce. Żadne zewnętrzne API nie jest potrzebne.'],
+      ['Potrzebuję czegoś, co działa offline.','Cały stack — od modelu po pamięć — działa bez internetu. W samolocie, off-grid, wszędzie.']
+    ]},
+  about:{kick:'05 · o nas',title:'Mały hub, duża niezależność.',
+    who:'Jesteśmy niewielkim zespołem inżynierów, którzy wierzą, że AI powinno należeć do użytkownika — nie do korporacji.',
+    why:'Robimy to, bo prywatna, lokalna inteligencja to jedyna, która naprawdę należy do Ciebie.',
+    joinT:'Jak dołączyć',join:'Wszystko publikujemy na GitHubie na licencji MIT. Forkuj, testuj, otwieraj PR-y — droga do kontrybucji jest otwarta.',
+    contactT:'Kontakt',gh:'GitHub',lic:'licencja',copy:'kopiuj',copied:'skopiowane ✓'},
+  footer:{privacy:'Zero ciasteczek · zero trackerów · model działa lokalnie w Twojej przeglądarce',
+    rights:'© 2026 aztun — zbudowane lokalnie, hostowane statycznie.',stack:'react 18 · onnx-ready · github pages',contact:'Kontakt'},
+  chat:{title:'NERU',status:'tryb FAQ',ph:'Zapytaj o cokolwiek…',send:'Wyślij',
+    note:'lokalnie · nic nie jest wysyłane · tryb FAQ',
+    welcome:'Cześć! Tu NERU w trybie FAQ. Zapytaj o prywatność, offline, backup albo jak zacząć — pełny model dołączy w ETAPIE 2.',
+    faq:['Co to jest NERU?','Czy moje dane są wysyłane?','Jak zacząć?','Czy działa offline?'],
+    ariaOpen:'Otwórz czat NERU',ariaClose:'Zamknij czat',
+    answers:{
+      neru:'NERU to lokalny asystent AI działający w Twojej przeglądarce — planuje, pamięta rozmowy i pracuje offline. Aktualnie v7 beta.',
+      privacy:'Nie. Wszystko dzieje się na Twoim urządzeniu: zero telemetrii, zero analityki, zero ciasteczek. Ta rozmowa również zostaje u Ciebie.',
+      start:'Wejdź w sekcję Projekty i otwórz NERU (/neru) — działa od razu w przeglądarce, bez instalacji i bez konta.',
+      offline:'Tak. Cały stack — model, pamięć, komendy — działa bez połączenia z internetem.',
+      backup:'/backup --encrypt tworzy szyfrowany obraz stanu agenta (AES-256), a /restore przywraca wybrane kategorie: memory, soul, chat, personas, config.',
+      voice:'/voice converse włącza pełną rozmowę głosową (STT + TTS + VAD) w stylu Her — zupełnie bez klawiatury.',
+      onnx:'W ETAPIE 2 do tego okna zostanie podłączony mały model ONNX uruchamiany lokalnie w przeglądarce. Na razie odpowiadam z bazy FAQ.',
+      hello:'Cześć! Jestem NERU w trybie FAQ — pytaj śmiało o NERU, prywatność, offline albo backup.',
+      fallback:'Jestem w trybie FAQ (pełny model dołączy w ETAPIE 2). Zapytaj o NERU, prywatność, offline, backup, voice albo jak zacząć.'
+    }}
+},
+en:{
+  nav:{manifest:'Manifest',projects:'Projects',neru:'NERU',use:'Use cases',about:'About'},
+  hero:{
+    boot:['aztun --init --local','NERU core: loaded · offline','trackers: 0 · cookies: 0 · your data: yours'],
+    tag:'Local intelligence. Zero cloud.',
+    lead:'AZTUN is a hub of technology projects that live on your hardware — private, offline and fully under your control. Flagship: NERU, a personal AI assistant that runs in your browser.',
+    cta1:'See NERU',cta2:'GitHub',scroll:'scroll',
+    core:{title:'NERU CORE',l1:'offline',l2:'latency 0ms',l3:'memory: local'}
+  },
+  manifest:{kick:'01 · manifest',title:'Principles, not slogans.',sub:'Three rules we never break — whatever the project.',
+    items:[
+      ['shield','Privacy','Your conversations, files and memory never leave your device. Zero telemetry, zero analytics — nothing that could leak.'],
+      ['sliders','Control','You approve every move. NERU proposes a plan, you decide — with full visibility into every action.'],
+      ['key','Independence','No cloud, no subscription. Open source, local models — no one can switch your assistant off.']
+    ]},
+  projects:{kick:'02 · projects',title:'What we build.',sub:'One hub, many tools. All of them local.',
+    badge:'v7 beta',role:'AI assistant · in-browser · offline',
+    neruDesc:'A personal AI assistant in your browser: it plans, remembers, speaks and listens — all offline, on your terms. No cloud, no account, no subscription.',
+    goNeru:'Go to NERU',soon:'Soon',slot2:'project 02 · in development',slot3:'project 03 · in development'},
+  features:{kick:'03 · neru — arsenal',title:'20 modules. Full control.',sub:'User commands, the thought engine and ARMS modules — all inside one local agent.',
+    groups:[
+      {code:'A',title:'User commands',sub:'You speak — NERU executes, after your approval.',items:[
+        ['clipboard','/plan','NERU proposes a plan — you approve or reject it before anything runs.'],
+        ['mic','/voice converse','Her-style voice mode — full spoken conversation (STT + TTS + VAD), no keyboard.'],
+        ['archive','/backup','Agent state backup — AES-256 encryption, auto schedule, selective categories.'],
+        ['rotate','/restore','Restore memory, soul, chat, personas, config — you pick what comes back.'],
+        ['search','/rag search','RAG over your docs — searches projects and auto-injects context into the prompt.'],
+        ['camera','/screenshot','Screenshot + vision analysis — captures the screen, analyzes it, suggests replies.'],
+        ['users','/agent /crew','Multi-agent — sub-agents for parallel tasks, crew commands for orchestration.'],
+        ['monitor','/desktop /3d','Desktop automation — calendar, window management, 3D app bridge.']
+      ]},
+      {code:'B',title:'Thought engine',sub:'What works under the hood while NERU thinks.',items:[
+        ['branch','WARP','Weighted Adaptive Reasoning Paths — parallel thought paths weighted by cost.'],
+        ['moon','DreamEngine','Sleep cycle: awake → drowsy → dreaming → deep → waking, plus memory crystallization.'],
+        ['zap','ProactivityEngine','Proactive signals — NERU suggests actions when it detects you are idle.'],
+        ['checkcircle','Verification Loop','Auto-checks after changes — tsc, npm test and smoke tests run automatically.'],
+        ['code','Prompt Engineering','4 modules: NegativeExample, OutputContract, MicroCompactor, TokenBudget.'],
+        ['chat','Relational','ConversationEngine + EmotionTracker + RelationshipCoach — tracks tone and dynamics.']
+      ]},
+      {code:'C',title:'ARMS modules',sub:'Specialist skills on demand.',items:[
+        ['file','Letters','Official letters — debt collection, court, office, bailiff. Read and translated into plain language.'],
+        ['music','Music','AI Playlist + Radio — learns your taste and generates context-aware playlists.'],
+        ['target','GameStation','36 Stratagems, chess, shogi, go — strategic thinking training.'],
+        ['lock','Security Suite','CodeAnalyzer + SecretScanner + MITREMapper — a full code security scan.'],
+        ['globe','EnvironmentSimulator','Cross-platform testing — Windows, Unix, macOS, Android, iOS from one environment.'],
+        ['login','Cloud Auth','Google / Apple / GitHub sign-in — privacy-first, data never leaves the local context.']
+      ]}
+    ]},
+  use:{kick:'04 · use cases',title:'Sounds familiar?',sub:'Real scenarios. This is how NERU answers.',you:'YOU',
+    items:[
+      ['I got a letter from an office and I have no idea what it says.','NERU reads it, translates it into plain language and tells you what to do by when.'],
+      ['A bailiff\u2019s letter — I don\u2019t know what to answer.','NERU classifies the letter type, checks the deadlines and drafts a reply for you.'],
+      ['I want an assistant that remembers me.','NERU builds persistent memory about you — local, encrypted and only yours.'],
+      ['I want a backup of my assistant before a change.','/backup --encrypt creates an encrypted image; /restore brings things back if anything goes wrong.'],
+      ['I don\u2019t want to depend on Google or OpenAI.','Models run locally in your browser. No external API is required.'],
+      ['I need something that works offline.','The whole stack — model to memory — runs without internet. On a plane, off-grid, anywhere.']
+    ]},
+  about:{kick:'05 · about',title:'Small hub, big independence.',
+    who:'We are a small team of engineers who believe AI should belong to the user — not to a corporation.',
+    why:'We do this because private, local intelligence is the only kind that truly belongs to you.',
+    joinT:'How to join',join:'Everything is published on GitHub under the MIT license. Fork it, test it, open PRs — the road to contributing is open.',
+    contactT:'Contact',gh:'GitHub',lic:'license',copy:'copy',copied:'copied ✓'},
+  footer:{privacy:'Zero cookies · zero trackers · the model runs locally in your browser',
+    rights:'© 2026 aztun — built locally, hosted statically.',stack:'react 18 · onnx-ready · github pages',contact:'Contact'},
+  chat:{title:'NERU',status:'FAQ mode',ph:'Ask anything…',send:'Send',
+    note:'local · nothing is sent · FAQ mode',
+    welcome:'Hi! This is NERU in FAQ mode. Ask about privacy, offline, backup or how to start — the full model arrives in STAGE 2.',
+    faq:['What is NERU?','Is my data sent anywhere?','How do I start?','Does it work offline?'],
+    ariaOpen:'Open NERU chat',ariaClose:'Close chat',
+    answers:{
+      neru:'NERU is a local AI assistant running in your browser — it plans, remembers conversations and works offline. Currently v7 beta.',
+      privacy:'No. Everything happens on your device: zero telemetry, zero analytics, zero cookies. This conversation stays with you too.',
+      start:'Open the Projects section and launch NERU (/neru) — it works instantly in the browser, no install, no account.',
+      offline:'Yes. The whole stack — model, memory, commands — runs without an internet connection.',
+      backup:'/backup --encrypt creates an encrypted image of the agent state (AES-256); /restore brings back selected categories: memory, soul, chat, personas, config.',
+      voice:'/voice converse starts a full spoken conversation (STT + TTS + VAD), Her-style — no keyboard at all.',
+      onnx:'In STAGE 2 a small ONNX model running locally in the browser will be wired into this window. For now I answer from the FAQ base.',
+      hello:'Hi! I\u2019m NERU in FAQ mode — ask me about NERU, privacy, offline or backup.',
+      fallback:'I\u2019m in FAQ mode (the full model arrives in STAGE 2). Ask about NERU, privacy, offline, backup, voice or how to start.'
+    }}
+}
+};
+
+/* ============ icons (feather-style, stroke 2) ============ */
+const ICONS = {
+  shield:<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+  sliders:<g><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></g>,
+  key:<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>,
+  clipboard:<g><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></g>,
+  mic:<g><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></g>,
+  archive:<g><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></g>,
+  rotate:<g><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></g>,
+  search:<g><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></g>,
+  camera:<g><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></g>,
+  users:<g><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g>,
+  monitor:<g><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></g>,
+  branch:<g><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></g>,
+  moon:<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+  zap:<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+  checkcircle:<g><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></g>,
+  code:<g><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></g>,
+  chat:<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>,
+  file:<g><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></g>,
+  music:<g><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></g>,
+  target:<g><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g>,
+  lock:<g><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g>,
+  globe:<g><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></g>,
+  login:<g><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></g>,
+  x:<g><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g>,
+  msg:<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+  send:<g><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></g>,
+  gh:<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>,
+  down:<g><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></g>,
+  right:<g><line x1="5" y1="12" x2="19" y2="19"/><polyline points="12 5 19 12 12 19"/></g>
+};
+/* small fix: 'right' arrow */
+ICONS.arrow = <g><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></g>;
+
+const Icon = ({name, size=22, sw=2}) => (
+  <svg className="ic" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICONS[name]}</svg>
+);
+
+/* ============ helpers ============ */
+function initLang(){
+  try{ const s = localStorage.getItem('aztun_lang'); if(s==='pl'||s==='en') return s; }catch(e){}
+  return ((navigator.language||'pl').toLowerCase().indexOf('en')===0) ? 'en' : 'pl';
+}
+function useReveal(){
+  const ref = useRef(null);
+  useEffect(()=>{
+    const el = ref.current; if(!el) return;
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ el.classList.add('in'); return; }
+    const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }); },{threshold:.12});
+    io.observe(el); return ()=>io.disconnect();
+  },[]);
+  return ref;
+}
+const Reveal = ({children, className='', delay=0}) => {
+  const ref = useReveal();
+  return <div ref={ref} className={'rv '+className} style={delay?{transitionDelay:delay+'ms'}:undefined}>{children}</div>;
+};
+
+/* ============ header ============ */
+function Header({lang, setLang, t}){
+  const [sc, setSc] = useState(false);
+  const [on, setOn] = useState(navigator.onLine);
+  useEffect(()=>{
+    const s = ()=>setSc(window.scrollY>14);
+    const u = ()=>setOn(navigator.onLine);
+    window.addEventListener('scroll', s, {passive:true});
+    window.addEventListener('online', u); window.addEventListener('offline', u);
+    s();
+    return ()=>{ window.removeEventListener('scroll', s); window.removeEventListener('online', u); window.removeEventListener('offline', u); };
+  },[]);
+  return (
+    <header className={'hd'+(sc?' sc':'')}>
+      <div className="wrap hd-in">
+        <a href="#top" className="logo">AZTUN<span className="logo-c">▮</span></a>
+        <nav className="nav">
+          <a href="#manifest">{t.nav.manifest}</a>
+          <a href="#projekty">{t.nav.projects}</a>
+          <a href="#neru">{t.nav.neru}</a>
+          <a href="#zastosowania">{t.nav.use}</a>
+          <a href="#onas">{t.nav.about}</a>
+        </nav>
+        <span className={'net '+(on?'on':'off')} title={on?'online':'offline'}><i></i>{on?'online':'offline'}</span>
+        <div className="lang" role="group" aria-label="Language">
+          <button className={lang==='pl'?'on':''} onClick={()=>setLang('pl')}>PL</button>
+          <button className={lang==='en'?'on':''} onClick={()=>setLang('en')}>EN</button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ============ hero terminal ============ */
+function TypingLines({lines}){
+  const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const total = lines.reduce((a,l)=>a+l.length, 0);
+  const [count, setCount] = useState(reduced ? total : 0);
+  useEffect(()=>{
+    setCount(reduced ? total : 0);
+    if(reduced) return;
+    let i = 0, alive = true;
+    const tick = ()=>{
+      if(!alive) return;
+      i++; setCount(i);
+      if(i < total) setTimeout(tick, 26);
+      else setTimeout(()=>{ if(alive){ i = 0; setCount(0); setTimeout(tick, 420); } }, 3400);
+    };
+    const t0 = setTimeout(tick, 500);
+    return ()=>{ alive = false; clearTimeout(t0); };
+  }, [total, reduced]);
+  let acc = 0;
+  return (
+    <div className="term" aria-hidden="true">
+      {lines.map((l,idx)=>{
+        const start = acc; acc += l.length;
+        const shown = Math.min(l.length, Math.max(0, count-start));
+        const visible = count > start || reduced;
+        const active = !reduced && count >= start && shown < l.length;
+        return (
+          <div key={idx} className={'tl'+(visible?' vis':'')}>
+            <span className="tl-p">{idx===0?'$':'>'}</span>{l.slice(0,shown)}{active && <span className="caret"/>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ============ hero ============ */
+function Hero({t}){
+  return (
+    <section className="hero" id="top">
+      <div className="wrap hero-grid">
+        <div>
+          <TypingLines lines={t.hero.boot}/>
+          <div className="h-tag">// {t.hero.tag}</div>
+          <h1 className="h-title"><span className="ghost" aria-hidden="true">AZTUN</span>AZTUN<span className="blockcaret" aria-hidden="true"></span></h1>
+          <p className="h-lead">{t.hero.lead}</p>
+          <div className="h-cta">
+            <a className="btn btn-p" href="#projekty">{t.hero.cta1} <Icon name="down" size={16}/></a>
+            <a className="btn btn-g" href="https://github.com/aztun" target="_blank" rel="noreferrer noopener">{t.hero.cta2} <Icon name="gh" size={16}/></a>
+          </div>
+        </div>
+        <Reveal>
+          <div className="core" aria-hidden="true">
+            <div className="core-grid"></div>
+            <div className="core-sweep"></div>
+            <div className="ring r3"></div><div className="ring r2"></div><div className="ring r1"></div>
+            <div className="ring ping"></div>
+            <div className="core-dot"></div>
+            <span className="node n1"></span><span className="node n2"></span><span className="node n3"></span><span className="node n4"></span>
+            <span className="chipf cf1">/voice converse</span>
+            <span className="chipf cf2">/plan</span>
+            <span className="chipf cf3">/backup --encrypt</span>
+            <span className="tk tk1"></span><span className="tk tk2"></span><span className="tk tk3"></span><span className="tk tk4"></span>
+            <div className="core-title"><i></i>{t.hero.core.title}</div>
+            <div className="core-readout">
+              <span><b>●</b> {t.hero.core.l1}</span>
+              <span>{t.hero.core.l2}</span>
+              <span>{t.hero.core.l3}</span>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+      <div className="scrollhint" aria-hidden="true">{t.hero.scroll}<span>↓</span></div>
+    </section>
+  );
+}
+
+/* ============ manifest ============ */
+const M_ACC = ['#4fe3a5','#5fd4f5','#ffc24b'];
+function Manifest({t}){
+  return (
+    <section id="manifest">
+      <div className="wrap">
+        <Reveal>
+          <div className="kick">{t.manifest.kick}</div>
+          <h2 className="sec-t">{t.manifest.title}</h2>
+          <p className="sec-sub">{t.manifest.sub}</p>
+        </Reveal>
+        <div className="m-grid">
+          {t.manifest.items.map((it,i)=>(
+            <Reveal key={it[1]} delay={i*90}>
+              <div className="m-card" style={{'--acc':M_ACC[i]}}>
+                <span className="m-num">0{i+1}</span>
+                <span className="m-ico"><Icon name={it[0]} size={22}/></span>
+                <h3>{it[1]}</h3>
+                <p>{it[2]}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============ projects ============ */
+function Projects({t}){
+  return (
+    <section id="projekty">
+      <div className="wrap">
+        <Reveal>
+          <div className="kick">{t.projects.kick}</div>
+          <h2 className="sec-t">{t.projects.title}</h2>
+          <p className="sec-sub">{t.projects.sub}</p>
+        </Reveal>
+        <div className="p-grid">
+          <Reveal>
+            <article className="p-neru">
+              <span className="p-badge"><i></i>{t.projects.badge}</span>
+              <h3 className="p-name">NERU</h3>
+              <div className="p-role">{t.projects.role}</div>
+              <p className="p-desc">{t.projects.neruDesc}</p>
+              <div className="p-links">
+                <a className="btn btn-p" href="/neru">{t.projects.goNeru} <Icon name="arrow" size={16}/></a>
+                <a className="btn btn-g" href="https://github.com/aztun" target="_blank" rel="noreferrer noopener">GitHub <Icon name="gh" size={16}/></a>
+              </div>
+              <div className="eq" aria-hidden="true">
+                {[0,1,2,3,4].map(i=><span key={i} style={{animationDelay:(i*0.13)+'s'}}/>)}
+              </div>
+            </article>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="p-soon">
+              <span className="s-plus"><Icon name="zap" size={26}/></span>
+              <div><div className="s-label">{t.projects.slot2}</div><div className="s-title">{t.projects.soon}</div></div>
+            </div>
+          </Reveal>
+          <Reveal delay={220}>
+            <div className="p-soon">
+              <span className="s-plus"><Icon name="target" size={26}/></span>
+              <div><div className="s-label">{t.projects.slot3}</div><div className="s-title">{t.projects.soon}</div></div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============ features ============ */
+const G_ACC = ['#ffc24b','#5fd4f5','#4fe3a5'];
+function Features({t}){
+  return (
+    <section id="neru">
+      <div className="wrap">
+        <Reveal>
+          <div className="kick">{t.features.kick}</div>
+          <h2 className="sec-t">{t.features.title}</h2>
+          <p className="sec-sub">{t.features.sub}</p>
+        </Reveal>
+        {t.features.groups.map((g,gi)=>(
+          <div className="f-group" key={g.code} style={{'--acc':G_ACC[gi]}}>
+            <Reveal>
+              <div className="f-head">
+                <span className="f-bar"></span>
+                <span className="f-code">[{g.code}]</span>
+                <h3>{g.title}</h3>
+              </div>
+              <p className="f-sub">{g.sub}</p>
+            </Reveal>
+            <div className="f-grid">
+              {g.items.map((it,i)=>(
+                <Reveal key={it[1]} delay={(i%3)*80}>
+                  <div className="f-card">
+                    <span className="f-ico"><Icon name={it[0]} size={20}/></span>
+                    <div className="f-name">{it[1]}</div>
+                    <p className="f-desc">{it[2]}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ============ use cases ============ */
+function UseCases({t}){
+  return (
+    <section id="zastosowania">
+      <div className="wrap">
+        <Reveal>
+          <div className="kick">{t.use.kick}</div>
+          <h2 className="sec-t">{t.use.title}</h2>
+          <p className="sec-sub">{t.use.sub}</p>
+        </Reveal>
+        <div className="u-grid">
+          {t.use.items.map((it,i)=>(
+            <Reveal key={i} delay={(i%2)*100}>
+              <div className="u-card">
+                <div className="u-b u-q"><span className="u-who">{t.use.you}</span>{it[0]}</div>
+                <div className="u-b u-a"><span className="u-who">↳ NERU</span>{it[1]}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============ about ============ */
+function About({t}){
+  const [copied, setCopied] = useState(false);
+  const copy = ()=>{
+    try{ navigator.clipboard.writeText('kontakt@aztun.com'); }catch(e){}
+    setCopied(true); setTimeout(()=>setCopied(false), 1600);
+  };
+  return (
+    <section id="onas">
+      <div className="wrap">
+        <Reveal>
+          <div className="kick">{t.about.kick}</div>
+          <h2 className="sec-t">{t.about.title}</h2>
+        </Reveal>
+        <div className="a-grid">
+          <Reveal>
+            <div>
+              <p className="a-who">{t.about.who}</p>
+              <p className="a-why">{t.about.why}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="a-panel">
+              <h3>{t.about.joinT}</h3>
+              <p className="a-join">{t.about.join}</p>
+              <div className="a-row">
+                <span className="k">{t.about.gh}</span>
+                <a href="https://github.com/aztun" target="_blank" rel="noreferrer noopener" style={{display:'flex',alignItems:'center',gap:8,color:'var(--text)'}}><Icon name="gh" size={16}/>github.com/aztun</a>
+              </div>
+              <div className="a-row">
+                <span className="k">{t.about.lic}</span>
+                <span className="chip">MIT</span>
+              </div>
+              <div className="a-row">
+                <span className="a-mail">kontakt@aztun.com</span>
+                <button className={'btn-xs'+(copied?' ok':'')} onClick={copy}>{copied?t.about.copied:t.about.copy}</button>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============ footer ============ */
+function Footer({t}){
+  return (
+    <footer className="ft">
+      <div className="ft-ghost" aria-hidden="true">AZTUN</div>
+      <div className="wrap ft-in">
+        <div className="ft-top">
+          <a href="#top" className="logo">AZTUN<span className="logo-c">▮</span></a>
+          <div className="ft-links">
+            <a href="https://github.com/aztun" target="_blank" rel="noreferrer noopener">GitHub</a>
+            <a href="/neru">NERU</a>
+            <a href="mailto:kontakt@aztun.com">{t.footer.contact}</a>
+          </div>
+        </div>
+        <div className="ft-priv"><Icon name="lock" size={16}/>{t.footer.privacy}</div>
+        <div className="ft-bot">
+          <span>{t.footer.rights}</span>
+          <span>{t.footer.stack}</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ============ ModelChat — AI slot ============ */
+function faqAnswer(text, ans){
+  const s = text.toLowerCase();
+  const has = (...ws)=>ws.some(w=>s.indexOf(w)>-1);
+  if(has('backup','--encrypt','restore')) return ans.backup;
+  if(has('voice','głos','glos','converse')) return ans.voice;
+  if(has('onnx','etap','stage')) return ans.onnx;
+  if(has('prywat','dane','wysył','wysyl','śledz','sledz','track','privacy','sent','my data','cookie','ciastecz')) return ans.privacy;
+  if(has('offline','internet','sieci','without connection')) return ans.offline;
+  if(has('zaczą','zaczac','start','install','zainstal','begin')) return ans.start;
+  if(has('neru','asystent','assistant','co to','what is')) return ans.neru;
+  if(has('cześć','czesc','hej','hello','hi','witaj')) return ans.hello;
+  return ans.fallback;
+}
+
+function ModelChat({model, lang, t}){
+  const [open, setOpen] = useState(false);
+  const [msgs, setMsgs] = useState(()=>[{who:'bot', text:t.chat.welcome}]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const boxRef = useRef(null);
+  const timerRef = useRef(null);
+  useEffect(()=>{
+    if(boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
+  }, [msgs, typing, open]);
+  useEffect(()=>()=>clearTimeout(timerRef.current), []);
+  const send = (raw)=>{
+    const text = (raw!==undefined ? raw : input).trim();
+    if(!text || typing) return;
+    setInput('');
+    setMsgs(m=>m.concat([{who:'user', text:text}]));
+    setTyping(true);
+    const delay = model ? 10 : 550 + Math.random()*450;
+    timerRef.current = setTimeout(()=>{
+      /* ETAP 2: if (model) → await model.generate(text, lang) — ONNX Runtime Web, lokalnie w przeglądarce */
+      const reply = model ? model.answer(text, lang) : faqAnswer(text, t.chat.answers);
+      setTyping(false);
+      setMsgs(m=>m.concat([{who:'bot', text:reply}]));
+    }, delay);
+  };
+  const onKey = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } };
+  return (
+    <React.Fragment>
+      <button className={'fab'+(open?' active':'')} onClick={()=>setOpen(o=>!o)} aria-label={open?t.chat.ariaClose:t.chat.ariaOpen}>
+        <Icon name={open?'x':'msg'} size={24}/>
+      </button>
+      <div className={'chat'+(open?'':' closed')} role="dialog" aria-label={'NERU — '+t.chat.status}>
+        <div className="chat-hd">
+          <span className="chat-dot"></span>
+          <span className="chat-name">{t.chat.title}</span>
+          <span className="chat-status">{t.chat.status}</span>
+          <button className="chat-x" onClick={()=>setOpen(false)} aria-label={t.chat.ariaClose}><Icon name="x" size={18}/></button>
+        </div>
+        <div className="chat-msgs" ref={boxRef} aria-live="polite">
+          {msgs.map((m,i)=>(<div key={i} className={'msg '+m.who}>{m.text}</div>))}
+          {typing && <div className="typing" aria-hidden="true"><i></i><i></i><i></i></div>}
+        </div>
+        <div className="chat-faq">
+          {t.chat.faq.map(q=>(<button key={q} onClick={()=>send(q)}>{q}</button>))}
+        </div>
+        <div className="chat-in">
+          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={onKey} placeholder={t.chat.ph} aria-label={t.chat.ph}/>
+          <button className="chat-send" onClick={()=>send()} disabled={!input.trim()||typing} aria-label={t.chat.send}><Icon name="send" size={17}/></button>
+        </div>
+        <div className="chat-note">{t.chat.note}</div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+/* ============ app ============ */
+function App(){
+  const [lang, setLang] = useState(initLang);
+  useEffect(()=>{
+    document.documentElement.lang = lang;
+    try{ localStorage.setItem('aztun_lang', lang); }catch(e){}
+  }, [lang]);
+  const t = LANG[lang];
+  return (
+    <React.Fragment>
+      <Header lang={lang} setLang={setLang} t={t}/>
+      <main>
+        <Hero t={t}/>
+        <Manifest t={t}/>
+        <Projects t={t}/>
+        <Features t={t}/>
+        <UseCases t={t}/>
+        <About t={t}/>
+      </main>
+      <Footer t={t}/>
+      <ModelChat model={null} lang={lang} t={t}/>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
