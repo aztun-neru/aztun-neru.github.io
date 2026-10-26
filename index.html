@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self';">
-<meta name="description" content="AZTUN — hub projektów technologicznych, które działają lokalnie. NERU: osobisty asystent AI w przeglądarce, offline, bez chmury.">
+<meta name="description" content="AZTUN — hub projektów technologicznych, które działają lokalnie. NERU: osobisty asystent w przeglądarce, offline, bez chmury.">
 <meta name="theme-color" content="#07111b">
 <title>AZTUN — lokalna inteligencja · NERU</title>
 <style>
@@ -291,7 +291,7 @@ pl:{
   hero:{
     boot:['aztun --init --local','rdzeń NERU: załadowany · offline','trackery: 0 · ciasteczka: 0 · dane: u Ciebie'],
     tag:'Lokalna inteligencja. Zero chmury.',
-    lead:'AZTUN to hub projektów technologicznych, które żyją na Twoim sprzęcie — prywatnie, offline i pod Twoją pełną kontrolą. Projekt flagowy: NERU, osobisty asystent AI działający w przeglądarce.',
+    lead:'AZTUN to hub projektów technologicznych, które żyją na Twoim sprzęcie — prywatnie, offline i pod Twoją pełną kontrolą. Projekt flagowy: NERU, osobisty asystent działający w przeglądarce.',
     cta1:'Zobacz NERU',cta2:'GitHub',scroll:'przewiń',
     core:{title:'NERU CORE',l1:'offline',l2:'latencja 0ms',l3:'pamięć: lokalna'}
   },
@@ -299,72 +299,62 @@ pl:{
     items:[
       ['shield','Prywatność','Twoje rozmowy, pliki i pamięć nie opuszczają urządzenia. Zero telemetrii, zero analityki — nic, co mogłoby wyciec.'],
       ['sliders','Kontrola','Ty zatwierdzasz każdy ruch. NERU proponuje plan, Ty decydujesz — z pełnym wglądem w każdą akcję.'],
-      ['key','Niezależność','Bez chmury i bez abonamentu. Otwarty kod, lokalne modele — nikt nie wyłączy Ci asystenta.']
+      ['key','Niezależność','Bez chmury i bez abonamentu. Otwarty kod, lokalny silnik — nikt nie wyłączy Ci asystenta.']
     ]},
   projects:{kick:'02 · projekty',title:'Co budujemy.',sub:'Jeden hub, wiele narzędzi. Wszystkie działają lokalnie.',
-    badge:'v7 beta',role:'asystent AI · w przeglądarce · offline',
-    neruDesc:'Osobisty asystent AI w przeglądarce: planuje, pamięta, mówi i słucha — wszystko offline, na Twoich zasadach. Zero chmury, zero konta, zero abonamentu.',
+    badge:'v7 beta',role:'asystent · w przeglądarce · offline',
+    neruDesc:'Osobisty asystent w przeglądarce: planuje, pamięta, mówi i słucha — wszystko offline, na Twoich zasadach. Zero chmury, zero konta, zero abonamentu.',
     goNeru:'Przejdź do NERU',soon:'Wkrótce',slot2:'projekt 02 · w budowie',slot3:'projekt 03 · w budowie'},
-  features:{kick:'03 · neru — arsenał',title:'20 modułów. Pełna kontrola.',sub:'Komendy użytkownika, silnik myślowy i moduły ARMS — wszystko w jednym lokalnym agencie.',
+    features:{kick:'03 · co potrafi NERU',title:'Konkrety zamiast modułów.',sub:'Co NERU robi dla Ciebie — w języku efektów, nie nazw mechanizmów.',
     groups:[
-      {code:'A',title:'Komendy użytkownika',sub:'Ty mówisz — NERU wykonuje, po Twojej aprobacie.',items:[
-        ['clipboard','/plan','NERU proponuje plan działania — Ty zatwierdzasz lub odrzucasz przed wykonaniem.'],
-        ['mic','/voice converse','Tryb głosowy Her-style — pełna rozmowa głosem (STT + TTS + VAD), bez klawiatury.'],
-        ['archive','/backup','Backup stanu agenta — szyfrowanie AES-256, harmonogram auto, selektywne kategorie.'],
-        ['rotate','/restore','Przywracanie memory, soul, chat, personas, config — wybierasz, co wraca.'],
-        ['search','/rag search','RAG nad dokumentacją — przeszukuje projekty i auto-wstrzykuje kontekst do prompta.'],
-        ['camera','/screenshot','Screenshot + analiza vision — capture ekranu, analiza i sugerowane odpowiedzi.'],
-        ['users','/agent /crew','Multi-agent — sub-agenci do zadań równoległych, komendy crew do orkiestracji.'],
-        ['monitor','/desktop /3d','Automatyzacja pulpitu — kalendarz, zarządzanie oknami, bridge do aplikacji 3D.']
+      {code:'A',title:'Na co dzień',sub:'Rzeczy, które NERU robi, żebyś miał mniej do pamiętania.',items:[
+        ['clipboard','Planuje z Tobą','Powiedz, co masz do zrobienia — NERU rozpisze to na kroki i poprowadzi.'],
+        ['mic','Mówi i słucha','Pełna rozmowa głosem — bez klawiatury.'],
+        ['archive','Pamięta','Kopia zapasowa i przywracanie — nic nie przepada.'],
+        ['search','Znajduje','Szukasz faktury, pliku, notatki? Znajdzie od razu, lokalnie.']
       ]},
-      {code:'B',title:'Silnik myślowy',sub:'To pracuje pod maską, gdy NERU myśli.',items:[
-        ['branch','WARP','Weighted Adaptive Reasoning Paths — równoległe ścieżki myślenia ważone kosztem.'],
-        ['moon','DreamEngine','Cykl snu: awake → drowsy → dreaming → deep → waking, plus krystalizacja pamięci.'],
-        ['zap','ProactivityEngine','Proaktywne sygnały — NERU sam proponuje akcje, gdy wykryje bezczynność.'],
-        ['checkcircle','Verification Loop','Auto-check po zmianach — tsc, npm test i smoke test uruchamiane automatycznie.'],
-        ['code','Prompt Engineering','4 moduły: NegativeExample, OutputContract, MicroCompactor, TokenBudget.'],
-        ['chat','Relational','ConversationEngine + EmotionTracker + RelationshipCoach — śledzi ton i dynamikę rozmowy.']
+      {code:'B',title:'W tle',sub:'Pracuje cicho, żebyś Ty nie musiał.',items:[
+        ['moon','Porządkuje w nocy','Gdy śpisz, układa Twoje pliki i notatki — rano masz porządek.'],
+        ['zap','Sam zgłasza pomysły','Gdy zauważy coś, co Cię dotyczy — powie Ci o tym.'],
+        ['checkcircle','Pilnuje terminów','Umowa wygasa? Rachunek się zbliża? Przypomni z wyprzedzeniem.']
       ]},
-      {code:'C',title:'Moduły ARMS',sub:'Specjalistyczne umiejętności na życzenie.',items:[
-        ['file','Letters','Pisma urzędowe — windykacja, sąd, urząd, komornik. Czyta i tłumaczy na prosty język.'],
-        ['music','Music','AI Playlist + Radio — uczy się preferencji i generuje playlisty dopasowane do kontekstu.'],
-        ['target','GameStation','36 Forteli, szachy, shogi, go — trening myślenia strategicznego.'],
-        ['lock','Security Suite','CodeAnalyzer + SecretScanner + MITREMapper — pełny skan bezpieczeństwa kodu.'],
-        ['globe','EnvironmentSimulator','Testy cross-platform — Windows, Unix, macOS, Android, iOS z jednego środowiska.'],
-        ['login','Cloud Auth','Logowanie Google / Apple / GitHub — privacy-first, dane nie opuszczają lokalnego kontekstu.']
+      {code:'C',title:'Konkretne sprawy',sub:'Pisma, bezpieczeństwo i reszta.',items:[
+        ['file','Czyta pisma i tłumaczy','List z urzędu, pismo od komornika — wyjaśni po ludzku.'],
+        ['lock','Dba o bezpieczeństwo','Chroni Twoje dane i środowisko pracy.'],
+        ['music','Robi muzykę','Proste ścieżki dźwiękowe do Twoich projektów.']
       ]}
     ]},
-  use:{kick:'04 · zastosowania',title:'Brzmi znajomo?',sub:'Prawdziwe scenariusze. Tak odpowiada NERU.',you:'TY',
+use:{kick:'04 · zastosowania',title:'Brzmi znajomo?',sub:'Prawdziwe scenariusze. Tak odpowiada NERU.',you:'TY',
     items:[
       ['Mam pismo z urzędu i nie rozumiem, o co chodzi.','NERU czyta pismo, tłumaczy je na prosty język i mówi, co musisz zrobić do kiedy.'],
       ['Pismo od komornika — nie wiem, co odpowiedzieć.','NERU klasyfikuje typ pisma, sprawdza terminy i proponuje treść odpowiedzi.'],
       ['Chcę asystenta, który mnie pamięta.','NERU buduje trwałą pamięć o Tobie — lokalną, szyfrowaną i tylko Twoją.'],
       ['Chcę zrobić backup asystenta przed zmianą.','/backup --encrypt tworzy szyfrowany obraz, a /restore przywraca, gdy coś pójdzie nie tak.'],
-      ['Nie chcę zależności od Google ani OpenAI.','Modele działają lokalnie w Twojej przeglądarce. Żadne zewnętrzne API nie jest potrzebne.'],
-      ['Potrzebuję czegoś, co działa offline.','Cały stack — od modelu po pamięć — działa bez internetu. W samolocie, off-grid, wszędzie.']
+      ['Nie chcę zależności od Google ani OpenAI.','Wszystko działa lokalnie w Twojej przeglądarce. Żadne zewnętrzne API nie jest potrzebne.'],
+      ['Potrzebuję czegoś, co działa offline.','Cały stack — od silnika po pamięć — działa bez internetu. W samolocie, off-grid, wszędzie.']
     ]},
   about:{kick:'05 · o nas',title:'Mały hub, duża niezależność.',
-    who:'Jesteśmy niewielkim zespołem inżynierów, którzy wierzą, że AI powinno należeć do użytkownika — nie do korporacji.',
+    who:'Jesteśmy niewielkim zespołem inżynierów, którzy wierzą, że inteligencja powinna należeć do użytkownika — nie do korporacji.',
     why:'Robimy to, bo prywatna, lokalna inteligencja to jedyna, która naprawdę należy do Ciebie.',
     joinT:'Jak dołączyć',join:'Wszystko publikujemy na GitHubie na licencji MIT. Forkuj, testuj, otwieraj PR-y — droga do kontrybucji jest otwarta.',
     contactT:'Kontakt',gh:'GitHub',lic:'licencja',copy:'kopiuj',copied:'skopiowane ✓'},
-  footer:{privacy:'Zero ciasteczek · zero trackerów · model działa lokalnie w Twojej przeglądarce',
+  footer:{privacy:'Zero ciasteczek · zero trackerów · wszystko działa lokalnie w Twojej przeglądarce',
     rights:'© 2026 aztun — zbudowane lokalnie, hostowane statycznie.',stack:'react 18 · onnx-ready · github pages',contact:'Kontakt'},
   chat:{title:'NERU',status:'tryb FAQ',ph:'Zapytaj o cokolwiek…',send:'Wyślij',
     note:'lokalnie · nic nie jest wysyłane · tryb FAQ',
-    welcome:'Cześć! Tu NERU w trybie FAQ. Zapytaj o prywatność, offline, backup albo jak zacząć — pełny model dołączy w ETAPIE 2.',
+    welcome:'Cześć! Tu NERU w trybie FAQ. Zapytaj o prywatność, offline, backup albo jak zacząć — pełna wersja dołączy w ETAPIE 2.',
     faq:['Co to jest NERU?','Czy moje dane są wysyłane?','Jak zacząć?','Czy działa offline?'],
     ariaOpen:'Otwórz czat NERU',ariaClose:'Zamknij czat',
     answers:{
-      neru:'NERU to lokalny asystent AI działający w Twojej przeglądarce — planuje, pamięta rozmowy i pracuje offline. Aktualnie v7 beta.',
+      neru:'NERU to lokalny asystent działający w Twojej przeglądarce — planuje, pamięta rozmowy i pracuje offline. Aktualnie v7 beta.',
       privacy:'Nie. Wszystko dzieje się na Twoim urządzeniu: zero telemetrii, zero analityki, zero ciasteczek. Ta rozmowa również zostaje u Ciebie.',
       start:'Wejdź w sekcję Projekty i otwórz NERU (/neru) — działa od razu w przeglądarce, bez instalacji i bez konta.',
-      offline:'Tak. Cały stack — model, pamięć, komendy — działa bez połączenia z internetem.',
+      offline:'Tak. Cały stack — silnik, pamięć, komendy — działa bez połączenia z internetem.',
       backup:'/backup --encrypt tworzy szyfrowany obraz stanu agenta (AES-256), a /restore przywraca wybrane kategorie: memory, soul, chat, personas, config.',
       voice:'/voice converse włącza pełną rozmowę głosową (STT + TTS + VAD) w stylu Her — zupełnie bez klawiatury.',
-      onnx:'W ETAPIE 2 do tego okna zostanie podłączony mały model ONNX uruchamiany lokalnie w przeglądarce. Na razie odpowiadam z bazy FAQ.',
+      onnx:'W ETAPIE 2 do tego okna zostanie podłączony mały silnik uruchamiany lokalnie w przeglądarce. Na razie odpowiadam z bazy FAQ.',
       hello:'Cześć! Jestem NERU w trybie FAQ — pytaj śmiało o NERU, prywatność, offline albo backup.',
-      fallback:'Jestem w trybie FAQ (pełny model dołączy w ETAPIE 2). Zapytaj o NERU, prywatność, offline, backup, voice albo jak zacząć.'
+      fallback:'Jestem w trybie FAQ (pełna wersja dołączy w ETAPIE 2). Zapytaj o NERU, prywatność, offline, backup, voice albo jak zacząć.'
     }}
 },
 en:{
@@ -372,7 +362,7 @@ en:{
   hero:{
     boot:['aztun --init --local','NERU core: loaded · offline','trackers: 0 · cookies: 0 · your data: yours'],
     tag:'Local intelligence. Zero cloud.',
-    lead:'AZTUN is a hub of technology projects that live on your hardware — private, offline and fully under your control. Flagship: NERU, a personal AI assistant that runs in your browser.',
+    lead:'AZTUN is a hub of technology projects that live on your hardware — private, offline and fully under your control. Flagship: NERU, a personal assistant that runs in your browser.',
     cta1:'See NERU',cta2:'GitHub',scroll:'scroll',
     core:{title:'NERU CORE',l1:'offline',l2:'latency 0ms',l3:'memory: local'}
   },
@@ -380,72 +370,62 @@ en:{
     items:[
       ['shield','Privacy','Your conversations, files and memory never leave your device. Zero telemetry, zero analytics — nothing that could leak.'],
       ['sliders','Control','You approve every move. NERU proposes a plan, you decide — with full visibility into every action.'],
-      ['key','Independence','No cloud, no subscription. Open source, local models — no one can switch your assistant off.']
+      ['key','Independence','No cloud, no subscription. Open source, local engine — no one can switch your assistant off.']
     ]},
   projects:{kick:'02 · projects',title:'What we build.',sub:'One hub, many tools. All of them local.',
-    badge:'v7 beta',role:'AI assistant · in-browser · offline',
-    neruDesc:'A personal AI assistant in your browser: it plans, remembers, speaks and listens — all offline, on your terms. No cloud, no account, no subscription.',
+    badge:'v7 beta',role:'assistant · in-browser · offline',
+    neruDesc:'A personal assistant in your browser: it plans, remembers, speaks and listens — all offline, on your terms. No cloud, no account, no subscription.',
     goNeru:'Go to NERU',soon:'Soon',slot2:'project 02 · in development',slot3:'project 03 · in development'},
-  features:{kick:'03 · neru — arsenal',title:'20 modules. Full control.',sub:'User commands, the thought engine and ARMS modules — all inside one local agent.',
+    features:{kick:'03 · what NERU does',title:'Outcomes, not modules.',sub:'What NERU does for you — in plain language, not mechanism names.',
     groups:[
-      {code:'A',title:'User commands',sub:'You speak — NERU executes, after your approval.',items:[
-        ['clipboard','/plan','NERU proposes a plan — you approve or reject it before anything runs.'],
-        ['mic','/voice converse','Her-style voice mode — full spoken conversation (STT + TTS + VAD), no keyboard.'],
-        ['archive','/backup','Agent state backup — AES-256 encryption, auto schedule, selective categories.'],
-        ['rotate','/restore','Restore memory, soul, chat, personas, config — you pick what comes back.'],
-        ['search','/rag search','RAG over your docs — searches projects and auto-injects context into the prompt.'],
-        ['camera','/screenshot','Screenshot + vision analysis — captures the screen, analyzes it, suggests replies.'],
-        ['users','/agent /crew','Multi-agent — sub-agents for parallel tasks, crew commands for orchestration.'],
-        ['monitor','/desktop /3d','Desktop automation — calendar, window management, 3D app bridge.']
+      {code:'A',title:'Day to day',sub:'Things NERU does so you have less to remember.',items:[
+        ['clipboard','Plans with you','Tell it what needs doing — NERU breaks it into steps and guides you.'],
+        ['mic','Speaks and listens','A full spoken conversation — no keyboard.'],
+        ['archive','Remembers','Backup and restore — nothing gets lost.'],
+        ['search','Finds things','Looking for an invoice, file, note? It finds it instantly, locally.']
       ]},
-      {code:'B',title:'Thought engine',sub:'What works under the hood while NERU thinks.',items:[
-        ['branch','WARP','Weighted Adaptive Reasoning Paths — parallel thought paths weighted by cost.'],
-        ['moon','DreamEngine','Sleep cycle: awake → drowsy → dreaming → deep → waking, plus memory crystallization.'],
-        ['zap','ProactivityEngine','Proactive signals — NERU suggests actions when it detects you are idle.'],
-        ['checkcircle','Verification Loop','Auto-checks after changes — tsc, npm test and smoke tests run automatically.'],
-        ['code','Prompt Engineering','4 modules: NegativeExample, OutputContract, MicroCompactor, TokenBudget.'],
-        ['chat','Relational','ConversationEngine + EmotionTracker + RelationshipCoach — tracks tone and dynamics.']
+      {code:'B',title:'In the background',sub:'Works quietly so you don\'t have to.',items:[
+        ['moon','Tidies at night','While you sleep it organizes your files and notes — you wake up to order.'],
+        ['zap','Suggests ideas','When it notices something that affects you — it tells you.'],
+        ['checkcircle','Keeps deadlines','Contract expiring? Bill coming up? It reminds you ahead of time.']
       ]},
-      {code:'C',title:'ARMS modules',sub:'Specialist skills on demand.',items:[
-        ['file','Letters','Official letters — debt collection, court, office, bailiff. Read and translated into plain language.'],
-        ['music','Music','AI Playlist + Radio — learns your taste and generates context-aware playlists.'],
-        ['target','GameStation','36 Stratagems, chess, shogi, go — strategic thinking training.'],
-        ['lock','Security Suite','CodeAnalyzer + SecretScanner + MITREMapper — a full code security scan.'],
-        ['globe','EnvironmentSimulator','Cross-platform testing — Windows, Unix, macOS, Android, iOS from one environment.'],
-        ['login','Cloud Auth','Google / Apple / GitHub sign-in — privacy-first, data never leaves the local context.']
+      {code:'C',title:'Specific matters',sub:'Letters, safety and the rest.',items:[
+        ['file','Reads and explains letters','A letter from an office or a debt collector — it explains in plain words.'],
+        ['lock','Keeps you safe','Protects your data and your working environment.'],
+        ['music','Makes music','Simple soundtracks for your projects.']
       ]}
     ]},
-  use:{kick:'04 · use cases',title:'Sounds familiar?',sub:'Real scenarios. This is how NERU answers.',you:'YOU',
+use:{kick:'04 · use cases',title:'Sounds familiar?',sub:'Real scenarios. This is how NERU answers.',you:'YOU',
     items:[
       ['I got a letter from an office and I have no idea what it says.','NERU reads it, translates it into plain language and tells you what to do by when.'],
       ['A bailiff\u2019s letter — I don\u2019t know what to answer.','NERU classifies the letter type, checks the deadlines and drafts a reply for you.'],
       ['I want an assistant that remembers me.','NERU builds persistent memory about you — local, encrypted and only yours.'],
       ['I want a backup of my assistant before a change.','/backup --encrypt creates an encrypted image; /restore brings things back if anything goes wrong.'],
-      ['I don\u2019t want to depend on Google or OpenAI.','Models run locally in your browser. No external API is required.'],
-      ['I need something that works offline.','The whole stack — model to memory — runs without internet. On a plane, off-grid, anywhere.']
+      ['I don\u2019t want to depend on Google or OpenAI.','Everything runs locally in your browser. No external API is required.'],
+      ['I need something that works offline.','The whole stack — engine to memory — runs without internet. On a plane, off-grid, anywhere.']
     ]},
   about:{kick:'05 · about',title:'Small hub, big independence.',
-    who:'We are a small team of engineers who believe AI should belong to the user — not to a corporation.',
+    who:'We are a small team of engineers who believe intelligence should belong to the user — not to a corporation.',
     why:'We do this because private, local intelligence is the only kind that truly belongs to you.',
     joinT:'How to join',join:'Everything is published on GitHub under the MIT license. Fork it, test it, open PRs — the road to contributing is open.',
     contactT:'Contact',gh:'GitHub',lic:'license',copy:'copy',copied:'copied ✓'},
-  footer:{privacy:'Zero cookies · zero trackers · the model runs locally in your browser',
+  footer:{privacy:'Zero cookies · zero trackers · everything runs locally in your browser',
     rights:'© 2026 aztun — built locally, hosted statically.',stack:'react 18 · onnx-ready · github pages',contact:'Contact'},
   chat:{title:'NERU',status:'FAQ mode',ph:'Ask anything…',send:'Send',
     note:'local · nothing is sent · FAQ mode',
-    welcome:'Hi! This is NERU in FAQ mode. Ask about privacy, offline, backup or how to start — the full model arrives in STAGE 2.',
+    welcome:'Hi! This is NERU in FAQ mode. Ask about privacy, offline, backup or how to start — the full version arrives in STAGE 2.',
     faq:['What is NERU?','Is my data sent anywhere?','How do I start?','Does it work offline?'],
     ariaOpen:'Open NERU chat',ariaClose:'Close chat',
     answers:{
-      neru:'NERU is a local AI assistant running in your browser — it plans, remembers conversations and works offline. Currently v7 beta.',
+      neru:'NERU is a local assistant running in your browser — it plans, remembers conversations and works offline. Currently v7 beta.',
       privacy:'No. Everything happens on your device: zero telemetry, zero analytics, zero cookies. This conversation stays with you too.',
       start:'Open the Projects section and launch NERU (/neru) — it works instantly in the browser, no install, no account.',
-      offline:'Yes. The whole stack — model, memory, commands — runs without an internet connection.',
+      offline:'Yes. The whole stack — engine, memory, commands — runs without an internet connection.',
       backup:'/backup --encrypt creates an encrypted image of the agent state (AES-256); /restore brings back selected categories: memory, soul, chat, personas, config.',
       voice:'/voice converse starts a full spoken conversation (STT + TTS + VAD), Her-style — no keyboard at all.',
-      onnx:'In STAGE 2 a small ONNX model running locally in the browser will be wired into this window. For now I answer from the FAQ base.',
+      onnx:'In STAGE 2 a small local engine running in the browser will be wired into this window. For now I answer from the FAQ base.',
       hello:'Hi! I\u2019m NERU in FAQ mode — ask me about NERU, privacy, offline or backup.',
-      fallback:'I\u2019m in FAQ mode (the full model arrives in STAGE 2). Ask about NERU, privacy, offline, backup, voice or how to start.'
+      fallback:'I\u2019m in FAQ mode (the full version arrives in STAGE 2). Ask about NERU, privacy, offline, backup, voice or how to start.'
     }}
 }
 };
@@ -1001,7 +981,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
     try {
       const r = await engine.chat.completions.create({
         messages: [
-          {role: "system", content: "Jesteś NERU — pomocnik na stronie aztun.com. Odpowiadaj zwięźle po polsku. Pomagaj z pytania o NERU (lokalny asystent AI), pobieranie, konfigurację. Jeśli nie wiesz - powiedz że nie wiesz, nie zmyślaj."},
+          {role: "system", content: "Jesteś NERU — pomocnik na stronie aztun.com. Odpowiadaj zwięźle po polsku. Pomagaj z pytania o NERU (lokalny asystent), pobieranie, konfigurację. Jeśli nie wiesz - powiedz że nie wiesz, nie zmyślaj."},
           {role: "user", content: q}
         ],
         temperature: 0.7,
